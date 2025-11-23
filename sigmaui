@@ -1,0 +1,450 @@
+-- Clean initialization
+if game.CoreGui:FindFirstChild("L4rd") then
+    game.CoreGui.L4rd:Destroy()
+end
+
+-- Anti-AFK
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+    v:Disable()
+end
+
+-- Main Library Table
+local Neverlose_Main = {
+    Settings = {
+        CloseBind = "RightControl",
+    },
+    Flags = {},
+    SettingsFlags = {},
+    Lib_Sounds = {
+        SoundVolume = 0.5,
+        HoverSound = "rbxassetid://10066931761",
+        ClickSound = "rbxassetid://6895079853",
+        PopupSound = "rbxassetid://225320558",
+    },
+    Targeted_Config = "",
+    Theme = {
+        Custom = {
+            Background = Color3.fromRGB(9, 9, 13),
+            Section = Color3.fromRGB(0, 20, 40),
+            Element = Color3.fromRGB(61, 133, 224),
+            Text = Color3.fromRGB(255,255,255),
+            Glow = Color3.fromRGB(14, 191, 255)
+        }
+    },
+    TweenService = game:GetService("TweenService"),
+    UIS = game:GetService("UserInputService"),
+    RunService = game:GetService("RunService"),
+    HttpService = game:GetService("HttpService"),
+    Players = game:GetService("Players"),
+    Client = game:GetService("Players").LocalPlayer,
+    Mouse = game:GetService("Players").LocalPlayer:GetMouse()
+}
+
+-- Play Sound Function
+function Neverlose_Main:PlaySound(SoundID)
+    local sound = Instance.new("Sound")
+    sound.SoundId = SoundID
+    sound.Looped = false
+    sound.Parent = workspace
+    sound.Volume = self.Lib_Sounds.SoundVolume
+    sound:Play()
+    game:GetService("Debris"):AddItem(sound, 2)
+end
+
+-- Notification Function
+function Neverlose_Main:Notify(config)
+    print("[Neverlose]", config.Title or "Notification", "-", config.Text or "")
+    -- Add your notification UI code here
+end
+
+-- Simple Window Function
+function Neverlose_Main:Window(config)
+    local title = config.Title or "Neverlose"
+    local Folder = config.CFG or "Neverlose"
+    
+    -- Create ScreenGui
+    local Neverlose = Instance.new("ScreenGui")
+    Neverlose.Name = "L4rd"
+    Neverlose.Parent = game.CoreGui
+    Neverlose.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    Neverlose.ResetOnSpawn = false
+    
+    -- Create Main Frame
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
+    MainFrame.Parent = Neverlose
+    MainFrame.BackgroundColor3 = Neverlose_Main.Theme.Custom.Background
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Position = UDim2.new(0.3, 0, 0.1, 0)
+    MainFrame.Size = UDim2.new(0, 600, 0, 400)
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+    
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = MainFrame
+    
+    -- Title Label
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Name = "Title"
+    TitleLabel.Parent = MainFrame
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Position = UDim2.new(0, 20, 0, 10)
+    TitleLabel.Size = UDim2.new(0, 200, 0, 40)
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.Text = title
+    TitleLabel.TextColor3 = Neverlose_Main.Theme.Custom.Text
+    TitleLabel.TextSize = 24
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    -- Container for tabs
+    local Container = Instance.new("ScrollingFrame")
+    Container.Name = "Container"
+    Container.Parent = MainFrame
+    Container.BackgroundTransparency = 1
+    Container.Position = UDim2.new(0, 10, 0, 60)
+    Container.Size = UDim2.new(1, -20, 1, -70)
+    Container.ScrollBarThickness = 4
+    Container.BorderSizePixel = 0
+    
+    local ContainerLayout = Instance.new("UIListLayout")
+    ContainerLayout.Parent = Container
+    ContainerLayout.Padding = UDim.new(0, 10)
+    ContainerLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    
+    -- Window functions
+    local WindowFunctions = {}
+    
+    function WindowFunctions:TSection(sectionTitle)
+        local SectionFunctions = {}
+        
+        function SectionFunctions:Tab(tabTitle)
+            local TabFunctions = {}
+            
+            function TabFunctions:Section(sectionName)
+                local Section = Instance.new("Frame")
+                Section.Name = sectionName
+                Section.Parent = Container
+                Section.BackgroundColor3 = Neverlose_Main.Theme.Custom.Section
+                Section.BorderSizePixel = 0
+                Section.Size = UDim2.new(1, 0, 0, 100)
+                
+                local SectionCorner = Instance.new("UICorner")
+                SectionCorner.CornerRadius = UDim.new(0, 6)
+                SectionCorner.Parent = Section
+                
+                local SectionTitle = Instance.new("TextLabel")
+                SectionTitle.Parent = Section
+                SectionTitle.BackgroundTransparency = 1
+                SectionTitle.Position = UDim2.new(0, 15, 0, 10)
+                SectionTitle.Size = UDim2.new(1, -30, 0, 25)
+                SectionTitle.Font = Enum.Font.GothamBold
+                SectionTitle.Text = sectionName
+                SectionTitle.TextColor3 = Neverlose_Main.Theme.Custom.Text
+                SectionTitle.TextSize = 16
+                SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+                
+                local ElementsContainer = Instance.new("Frame")
+                ElementsContainer.Name = "Elements"
+                ElementsContainer.Parent = Section
+                ElementsContainer.BackgroundTransparency = 1
+                ElementsContainer.Position = UDim2.new(0, 15, 0, 40)
+                ElementsContainer.Size = UDim2.new(1, -30, 1, -50)
+                
+                local ElementsLayout = Instance.new("UIListLayout")
+                ElementsLayout.Parent = ElementsContainer
+                ElementsLayout.Padding = UDim.new(0, 8)
+                ElementsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+                
+                -- Update section size based on content
+                local function updateSize()
+                    Section.Size = UDim2.new(1, 0, 0, ElementsLayout.AbsoluteContentSize.Y + 60)
+                    Container.CanvasSize = UDim2.new(0, 0, 0, ContainerLayout.AbsoluteContentSize.Y + 20)
+                end
+                
+                ElementsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
+                
+                local Elements = {}
+                
+                -- Toggle Element
+                function Elements:Toggle(name, callback)
+                    local ToggleFrame = Instance.new("Frame")
+                    ToggleFrame.Name = name
+                    ToggleFrame.Parent = ElementsContainer
+                    ToggleFrame.BackgroundTransparency = 1
+                    ToggleFrame.Size = UDim2.new(1, 0, 0, 30)
+                    
+                    local ToggleLabel = Instance.new("TextLabel")
+                    ToggleLabel.Parent = ToggleFrame
+                    ToggleLabel.BackgroundTransparency = 1
+                    ToggleLabel.Position = UDim2.new(0, 0, 0, 0)
+                    ToggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+                    ToggleLabel.Font = Enum.Font.Gotham
+                    ToggleLabel.Text = name
+                    ToggleLabel.TextColor3 = Neverlose_Main.Theme.Custom.Text
+                    ToggleLabel.TextSize = 14
+                    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+                    
+                    local ToggleButton = Instance.new("TextButton")
+                    ToggleButton.Parent = ToggleFrame
+                    ToggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    ToggleButton.Position = UDim2.new(0.7, 0, 0, 5)
+                    ToggleButton.Size = UDim2.new(0, 50, 0, 20)
+                    ToggleButton.Text = ""
+                    ToggleButton.AutoButtonColor = false
+                    
+                    local ButtonCorner = Instance.new("UICorner")
+                    ButtonCorner.CornerRadius = UDim.new(1, 0)
+                    ButtonCorner.Parent = ToggleButton
+                    
+                    local ToggleDot = Instance.new("Frame")
+                    ToggleDot.Parent = ToggleButton
+                    ToggleDot.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+                    ToggleDot.Position = UDim2.new(0, 2, 0.5, -8)
+                    ToggleDot.Size = UDim2.new(0, 16, 0, 16)
+                    
+                    local DotCorner = Instance.new("UICorner")
+                    DotCorner.CornerRadius = UDim.new(1, 0)
+                    DotCorner.Parent = ToggleDot
+                    
+                    local toggled = false
+                    
+                    local function Set(value)
+                        toggled = value
+                        if toggled then
+                            Neverlose_Main.TweenService:Create(ToggleDot, TweenInfo.new(0.2), {
+                                Position = UDim2.new(1, -18, 0.5, -8),
+                                BackgroundColor3 = Neverlose_Main.Theme.Custom.Element
+                            }):Play()
+                        else
+                            Neverlose_Main.TweenService:Create(ToggleDot, TweenInfo.new(0.2), {
+                                Position = UDim2.new(0, 2, 0.5, -8),
+                                BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+                            }):Play()
+                        end
+                        pcall(callback, toggled)
+                    end
+                    
+                    ToggleButton.MouseButton1Click:Connect(function()
+                        Neverlose_Main:PlaySound(Neverlose_Main.Lib_Sounds.ClickSound)
+                        Set(not toggled)
+                    end)
+                    
+                    updateSize()
+                    
+                    Neverlose_Main.Flags[name] = {
+                        Value = toggled,
+                        Set = Set
+                    }
+                    
+                    return {
+                        Set = Set,
+                        Value = toggled
+                    }
+                end
+                
+                -- Button Element
+                function Elements:Button(name, callback)
+                    local ButtonFrame = Instance.new("TextButton")
+                    ButtonFrame.Name = name
+                    ButtonFrame.Parent = ElementsContainer
+                    ButtonFrame.BackgroundColor3 = Neverlose_Main.Theme.Custom.Element
+                    ButtonFrame.BorderSizePixel = 0
+                    ButtonFrame.Size = UDim2.new(1, 0, 0, 35)
+                    ButtonFrame.Font = Enum.Font.GothamBold
+                    ButtonFrame.Text = name
+                    ButtonFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    ButtonFrame.TextSize = 14
+                    ButtonFrame.AutoButtonColor = false
+                    
+                    local ButtonCorner = Instance.new("UICorner")
+                    ButtonCorner.CornerRadius = UDim.new(0, 4)
+                    ButtonCorner.Parent = ButtonFrame
+                    
+                    ButtonFrame.MouseButton1Click:Connect(function()
+                        Neverlose_Main:PlaySound(Neverlose_Main.Lib_Sounds.ClickSound)
+                        pcall(callback)
+                    end)
+                    
+                    ButtonFrame.MouseEnter:Connect(function()
+                        Neverlose_Main.TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {
+                            BackgroundColor3 = Color3.fromRGB(
+                                Neverlose_Main.Theme.Custom.Element.R * 255 * 1.2,
+                                Neverlose_Main.Theme.Custom.Element.G * 255 * 1.2,
+                                Neverlose_Main.Theme.Custom.Element.B * 255 * 1.2
+                            )
+                        }):Play()
+                    end)
+                    
+                    ButtonFrame.MouseLeave:Connect(function()
+                        Neverlose_Main.TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {
+                            BackgroundColor3 = Neverlose_Main.Theme.Custom.Element
+                        }):Play()
+                    end)
+                    
+                    updateSize()
+                end
+                
+                -- Slider Element
+                function Elements:Slider(name, min, max, default, callback)
+                    local SliderFrame = Instance.new("Frame")
+                    SliderFrame.Name = name
+                    SliderFrame.Parent = ElementsContainer
+                    SliderFrame.BackgroundTransparency = 1
+                    SliderFrame.Size = UDim2.new(1, 0, 0, 45)
+                    
+                    local SliderLabel = Instance.new("TextLabel")
+                    SliderLabel.Parent = SliderFrame
+                    SliderLabel.BackgroundTransparency = 1
+                    SliderLabel.Size = UDim2.new(1, 0, 0, 20)
+                    SliderLabel.Font = Enum.Font.Gotham
+                    SliderLabel.Text = name .. ": " .. default
+                    SliderLabel.TextColor3 = Neverlose_Main.Theme.Custom.Text
+                    SliderLabel.TextSize = 14
+                    SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
+                    
+                    local SliderBar = Instance.new("Frame")
+                    SliderBar.Parent = SliderFrame
+                    SliderBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    SliderBar.Position = UDim2.new(0, 0, 0, 25)
+                    SliderBar.Size = UDim2.new(1, 0, 0, 6)
+                    
+                    local BarCorner = Instance.new("UICorner")
+                    BarCorner.CornerRadius = UDim.new(1, 0)
+                    BarCorner.Parent = SliderBar
+                    
+                    local SliderFill = Instance.new("Frame")
+                    SliderFill.Parent = SliderBar
+                    SliderFill.BackgroundColor3 = Neverlose_Main.Theme.Custom.Element
+                    SliderFill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+                    
+                    local FillCorner = Instance.new("UICorner")
+                    FillCorner.CornerRadius = UDim.new(1, 0)
+                    FillCorner.Parent = SliderFill
+                    
+                    local dragging = false
+                    local currentValue = default
+                    
+                    local function Set(value)
+                        currentValue = math.clamp(value, min, max)
+                        SliderLabel.Text = name .. ": " .. currentValue
+                        SliderFill.Size = UDim2.new((currentValue - min) / (max - min), 0, 1, 0)
+                        pcall(callback, currentValue)
+                    end
+                    
+                    SliderBar.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            dragging = true
+                        end
+                    end)
+                    
+                    SliderBar.InputEnded:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            dragging = false
+                        end
+                    end)
+                    
+                    Neverlose_Main.UIS.InputChanged:Connect(function(input)
+                        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                            local mousePos = Neverlose_Main.Mouse.X
+                            local relativePos = math.clamp((mousePos - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
+                            local value = math.floor(min + (max - min) * relativePos)
+                            Set(value)
+                        end
+                    end)
+                    
+                    updateSize()
+                    
+                    Neverlose_Main.Flags[name] = {
+                        Value = currentValue,
+                        Set = Set
+                    }
+                    
+                    return {
+                        Set = Set,
+                        Value = currentValue
+                    }
+                end
+                
+                -- Dropdown Element
+                function Elements:Dropdown(name, options, callback)
+                    local DropdownFrame = Instance.new("Frame")
+                    DropdownFrame.Name = name
+                    DropdownFrame.Parent = ElementsContainer
+                    DropdownFrame.BackgroundTransparency = 1
+                    DropdownFrame.Size = UDim2.new(1, 0, 0, 35)
+                    
+                    local DropdownButton = Instance.new("TextButton")
+                    DropdownButton.Parent = DropdownFrame
+                    DropdownButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    DropdownButton.Size = UDim2.new(1, 0, 0, 35)
+                    DropdownButton.Font = Enum.Font.Gotham
+                    DropdownButton.Text = name .. ": " .. (options[1] or "None")
+                    DropdownButton.TextColor3 = Neverlose_Main.Theme.Custom.Text
+                    DropdownButton.TextSize = 14
+                    DropdownButton.AutoButtonColor = false
+                    
+                    local ButtonCorner = Instance.new("UICorner")
+                    ButtonCorner.CornerRadius = UDim.new(0, 4)
+                    ButtonCorner.Parent = DropdownButton
+                    
+                    local currentValue = options[1]
+                    local isOpen = false
+                    
+                    local function Set(value)
+                        currentValue = value
+                        DropdownButton.Text = name .. ": " .. value
+                        pcall(callback, value)
+                    end
+                    
+                    local function Refresh(newOptions)
+                        options = newOptions
+                        if not table.find(options, currentValue) and #options > 0 then
+                            Set(options[1])
+                        end
+                    end
+                    
+                    DropdownButton.MouseButton1Click:Connect(function()
+                        Neverlose_Main:PlaySound(Neverlose_Main.Lib_Sounds.ClickSound)
+                        Neverlose_Main:Notify({
+                            Title = "Dropdown",
+                            Text = "Selected: " .. currentValue,
+                            Time = 2
+                        })
+                    end)
+                    
+                    updateSize()
+                    
+                    Neverlose_Main.Flags[name] = {
+                        Value = currentValue,
+                        Set = Set
+                    }
+                    
+                    return {
+                        Set = Set,
+                        Refresh = Refresh,
+                        Value = currentValue
+                    }
+                end
+                
+                return Elements
+            end
+            
+            return TabFunctions
+        end
+        
+        return SectionFunctions
+    end
+    
+    -- Show notification that UI loaded
+    task.wait(0.5)
+    Neverlose_Main:Notify({
+        Title = "Success",
+        Text = "UI Loaded Successfully!",
+        Time = 3
+    })
+    
+    return WindowFunctions
+end
+
+return Neverlose_Main
