@@ -17,7 +17,6 @@ local stat = player.PlayerFolder.StatsFunction
 
 print("Team: " .. team)
 
--- Enhanced Config
 local Config = {
     Farming = false,
     NPCTargets = {},
