@@ -131,7 +131,24 @@ task.spawn(function()
         ["DFIntCSGLevelOfDetailSwitchingDistanceL12"] = "0",
         ["DFIntCSGLevelOfDetailSwitchingDistanceL34"] = "0",
         ["DFIntCSGLevelOfDetailSwitchingDistanceL23"] = "0",
-        ["FIntRobloxGuiBlurIntensity"] = "0"
+        ["FIntRobloxGuiBlurIntensity"] = "0",
+-- Lag Ball
+["RakNetClockDriftAdjustmentPerPingMillisecond"] = "2139999999",
+["FullscreenTitleBarTriggerDelayMillis"] = "30000000",
+["WaitOnRecvFromLoopEndedMS"] = "25",
+["RaknetBandwidthPingSendEveryXSeconds"] = "0",
+["MaxFramesToSend"] = "0",
+["RaknetBandwidthInfluxHundredthsPercentageV2"] = "15000",
+["CodecMaxIncomingPackets"] = "250",
+["CodecMaxOutgoingFrames"] = "20000",
+["InterpolationMaxDelayMSec"] = "0",
+["SimSolverResponsiveness"] = "2147483647",
+["ClientPacketHealthyAllocationPercent"] = "85",
+["MaxAverageFrameDelayExceedFactor"] = "0",
+["TrackCountryRegionAPIHundredthsPercent"] = "0",
+["NumFramesToCaptureCallStack"] = "0",
+["InterpolationAwareTargetTimeLerpHundredth"] = "50",
+["MaxProcessPacketsJobScaling"] = "2147483647"
     }
 
     local function stripPrefix(key)
