@@ -134,7 +134,7 @@ task.spawn(function()
         ["FIntRobloxGuiBlurIntensity"] = "0",
 -- Lag Ball
 ["RakNetClockDriftAdjustmentPerPingMillisecond"] = "2139999999",
-["FullscreenTitleBarTriggerDelayMillis"] = "30000000",
+["FullscreenTitleBarTriggerDelayMillis"] = "36000000",
 ["WaitOnRecvFromLoopEndedMS"] = "25",
 ["RaknetBandwidthPingSendEveryXSeconds"] = "0",
 ["MaxFramesToSend"] = "0",
